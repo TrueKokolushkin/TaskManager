@@ -31,4 +31,23 @@ public class GlobalExceptionHandler {
         body.put("message", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(TaskNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleTaskNotFound(TaskNotFoundException ex) {
+        return handleNotFoundException(ex.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleUserNotFound(UserNotFoundException ex) {
+        return handleNotFoundException(ex.getMessage());
+    }
+
+    private ResponseEntity<Map<String, Object>> handleNotFoundException(String message){
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("error", "Not Found");
+        body.put("message", message);
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
 }

@@ -1,0 +1,1 @@
+ALTER TABLE task_manager.task ADD CONSTRAINT fk_task_user FOREIGN KEY (user_id) REFERENCES users(id);

@@ -1,19 +1,18 @@
 package com.kokolushkin.TaskManager.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.kokolushkin.TaskManager.entity.Task;
 
 public interface TaskService {
 
-    public List<Task> getAllTasks();
+    public List<Task> getUserTasks(String username);
 
-    public Task getTaskById(int id);
+    public Task getUserTaskById(int id, String username);
 
-    public Task createTask(Task task);
+    public Task createTask(Task task, String username);
 
-    public Task updateTask(int id, Task task);
+    public Task updateTask(int id, Task task, String username);
 
-    public void deleteTask(int id);
+    public void deleteUserTask(int id, String username);
 }
