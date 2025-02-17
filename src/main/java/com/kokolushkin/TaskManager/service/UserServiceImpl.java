@@ -23,21 +23,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public User registerUser(RegisterRequest reauest) {
-        if (userRepository.findByUsername(reauest.getUsername()).isPresent()) {
-            throw new RuntimeException("A user with this name already exists.");
+    public User registerUser(RegisterRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("A user with this email already exists.");
         }
 
         User user = new User();
-        user.setUsername(reauest.getUsername());
-        user.setPassword(passwordEncoder.encode(reauest.getPassword()));
+        user.setEmail(request.getEmail());
+        user.setUsername(request.getUsername());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         return userRepository.save(user);
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override
@@ -46,11 +47,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = findByEmail(email).orElseThrow(() -> new UserNotFoundException("User with email: " + email + " not found."));
         UserDetails userDetails = org.springframework.security.core.userdetails
                                      .User.builder()
-                                     .username(user.getUsername())
+                                     .username(user.getEmail())
                                      .password(user.getPassword())
                                      .build();
         return userDetails;

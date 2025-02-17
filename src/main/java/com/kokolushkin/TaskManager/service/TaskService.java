@@ -11,11 +11,11 @@ public interface TaskService {
                                    LocalDateTime startDate, LocalDateTime endDate,
                                    String sortField, String sortDirecString);
 
-    public Task getUserTaskById(int id, String username);
+    public Task getUserTaskById(int id, String email);
 
     public Task createTask(Task task, String username);
 
-    public Task updateTask(int id, Task task, String username);
+    public Task updateTask(int id, Task task, String email);
 
-    public void deleteUserTask(int id, String username);
+    public void deleteUserTask(int id, String email);
 }

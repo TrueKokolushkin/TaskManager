@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.kokolushkin.TaskManager.dao.TaskRepository;
@@ -29,11 +30,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getUserTasks(String username, Task.Priority priority, String keyword, LocalDateTime startDate, LocalDateTime endDate, String sortField, String sortDirecString) {
+    public List<Task> getUserTasks(String email, Task.Priority priority, String keyword, LocalDateTime startDate, LocalDateTime endDate, String sortField, String sortDirecString) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirecString), sortField);
         Specification<Task> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("user").get("username"), username));
+            predicates.add(cb.equal(root.get("user").get("email"), email));
 
             if (Objects.nonNull(priority)) {
                 predicates.add(cb.equal(root.get("priority"), priority));
@@ -60,35 +61,51 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task getUserTaskById(int id, String username) {
-        return taskRepository.findByIdAndUserUsername(id, username)
-                .orElseThrow(() -> new TaskNotFoundException("Task not found or unavailable."));
+    public Task getUserTaskById(int id, String email) {
+        Task task = taskRepository.findById(id)
+                                  .orElseThrow(() -> new TaskNotFoundException("Task not found or unavailable."));
+
+        if (!task.getUser().getEmail().equals(email)) {
+            throw new AccessDeniedException("You cannot get this task.");
+        }
+
+        return task;
     }
 
     @Override
-    public Task createTask(Task task, String username) {
-        User user = userService.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found."));
+    public Task createTask(Task task, String email) {
+        User user = userService.findByEmail(email)
+                               .orElseThrow(() -> new UserNotFoundException("User not found."));
         task.setUser(user);
         return taskRepository.save(task);
     }
 
     @Override
-    public Task updateTask(int id, Task taskDetail, String username) {
-        return taskRepository.findByIdAndUserUsername(id, username)
-                             .map(task -> {
-                                 task.setTitle(taskDetail.getTitle());
-                                 task.setDescription(taskDetail.getDescription());
-                                 task.setPriority(taskDetail.getPriority());
-                                 task.setDateTime(taskDetail.getDateTime());
-                                 return taskRepository.save(task);
-                             }).orElseThrow(() -> new TaskNotFoundException("Task not found."));
+    public Task updateTask(int id, Task taskDetail, String email) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found or unavailable."));
+
+        if (!task.getUser().getEmail().equals(email)) {
+            throw new AccessDeniedException("You cannot update this task.");
+        }
+
+        task.setTitle(taskDetail.getTitle());
+        task.setDescription(taskDetail.getDescription());
+        task.setPriority(taskDetail.getPriority());
+        task.setDateTime(taskDetail.getDateTime());
+
+        return taskRepository.save(task);
     }
 
     @Override
-    public void deleteUserTask(int id, String username) {
-        Task task = taskRepository.findByIdAndUserUsername(id, username)
+    public void deleteUserTask(int id, String email) {
+        Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found or unavailable."));
+
+        if (!task.getUser().getEmail().equals(email)) {
+            throw new AccessDeniedException("You cannot delete this task.");
+        }
+
         taskRepository.delete(task);
     }
 }

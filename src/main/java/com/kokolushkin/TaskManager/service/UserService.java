@@ -7,6 +7,6 @@ import com.kokolushkin.TaskManager.entity.User;
 
 public interface UserService {
     User registerUser(RegisterRequest reauest);
-    Optional<User> findByUsername(String username);
+    Optional<User> findByEmail(String email);
     boolean checkPassword(String rawPassword, String encodedPassword);
 }

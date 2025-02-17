@@ -1,0 +1,1 @@
+ALTER TABLE task_manager.users DROP INDEX username;

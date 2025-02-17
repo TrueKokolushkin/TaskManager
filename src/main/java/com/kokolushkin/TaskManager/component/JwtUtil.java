@@ -14,16 +14,16 @@ public class JwtUtil {
 
     private static final SecretKey secretKey = Jwts.SIG.HS256.key().build();
 
-    public String generateToken(String username) {
+    public String generateToken(String email) {
         return Jwts.builder()
-                   .subject(username)
+                   .subject(email)
                    .issuedAt(new Date())
                    .expiration(new Date(System.currentTimeMillis() + 3600000))
                    .signWith(secretKey)
                    .compact();
     }
 
-    public String extractUsername(String token) {
+    public String extractEmail(String token) {
         return Jwts.parser()
                    .verifyWith(secretKey)
                    .build()
@@ -33,8 +33,8 @@ public class JwtUtil {
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
-        String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        String email = extractEmail(token);
+        return email.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {

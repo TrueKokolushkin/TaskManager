@@ -32,10 +32,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody RegisterRequest request) {
-        Optional<User> user = userService.findByUsername(request.getUsername());
+        Optional<User> user = userService.findByEmail(request.getEmail());
 
         if (user.isPresent() && userService.checkPassword(request.getPassword(), user.get().getPassword())) {
-            return ResponseEntity.ok(jwtUtil.generateToken(user.get().getUsername()));
+            return ResponseEntity.ok(jwtUtil.generateToken(user.get().getEmail()));
         }
 
         return ResponseEntity.status(401).body("Incorrect login or password.");

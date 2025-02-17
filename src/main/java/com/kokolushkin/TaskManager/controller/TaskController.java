@@ -40,8 +40,8 @@ public class TaskController {
             @RequestParam(required = false, defaultValue = "dateTime") String sortField,
             @RequestParam(required = false, defaultValue = "asc") String sortDirection) {
 
-        String username = getCurrentUsername();
-        List<TaskDTO> taskDTOs = taskService.getUserTasks(username, priority, keyword,
+        String email = getCurrentUserEmail();
+        List<TaskDTO> taskDTOs = taskService.getUserTasks(email, priority, keyword,
                                                           startDate, endDate, sortField,
                                                           sortDirection)
                                             .stream().map(TaskDTO::new).toList();
@@ -50,29 +50,29 @@ public class TaskController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TaskDTO> getUserTaskById(@PathVariable Integer id){
-        Task task = taskService.getUserTaskById(id, getCurrentUsername());
+        Task task = taskService.getUserTaskById(id, getCurrentUserEmail());
         return ResponseEntity.ok(new TaskDTO(task));
     }
 
     @PostMapping
     public ResponseEntity<TaskDTO> createTask(@RequestBody Task task){
-        Task newTask = taskService.createTask(task, getCurrentUsername());
+        Task newTask = taskService.createTask(task, getCurrentUserEmail());
         return ResponseEntity.ok(new TaskDTO(newTask));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<TaskDTO> updateTask(@PathVariable Integer id, @RequestBody Task task){
-        Task newTask = taskService.updateTask(id, task, getCurrentUsername());
+        Task newTask = taskService.updateTask(id, task, getCurrentUserEmail());
         return ResponseEntity.ok(new TaskDTO(newTask));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUserTask(@PathVariable Integer id){
-        taskService.deleteUserTask(id, getCurrentUsername());
+        taskService.deleteUserTask(id, getCurrentUserEmail());
         return ResponseEntity.ok("Task successfully deleted.");
     }
 
-    private String getCurrentUsername() {
+    private String getCurrentUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getName();
     }
