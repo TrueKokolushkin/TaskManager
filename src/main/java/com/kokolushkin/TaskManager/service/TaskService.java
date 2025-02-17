@@ -1,12 +1,15 @@
 package com.kokolushkin.TaskManager.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.kokolushkin.TaskManager.entity.Task;
 
 public interface TaskService {
 
-    public List<Task> getUserTasks(String username);
+    public List<Task> getUserTasks(String username, Task.Priority priority, String keyword,
+                                   LocalDateTime startDate, LocalDateTime endDate,
+                                   String sortField, String sortDirecString);
 
     public Task getUserTaskById(int id, String username);
 
