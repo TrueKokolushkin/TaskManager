@@ -1,5 +1,6 @@
 package com.kokolushkin.TaskManager.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,5 +17,6 @@ public interface TaskRepository extends JpaRepository<Task, Integer>, JpaSpecifi
     List<Task> findByUserUsername(String username, Sort sort);
     Optional<Task> findByIdAndUserUsername(int id, String username);
     List<Task> findByUserUsernameAndPriority(String username, Task.Priority priority, Sort sort);
+    List<Task> findByDateTimeBetween(LocalDateTime start, LocalDateTime end);
 
 }
