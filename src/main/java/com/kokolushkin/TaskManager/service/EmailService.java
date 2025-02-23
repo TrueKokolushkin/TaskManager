@@ -25,12 +25,12 @@ public class EmailService {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper messageHelper = new MimeMessageHelper(message, true);
-            
+
             messageHelper.setFrom("MyTaskManager@task");
             messageHelper.setTo(to);
             messageHelper.setSubject("Task reminder: " + TaskTitle);
             messageHelper.setText("Task description: " + taskDescription);
-            
+
             javaMailSender.send(message);
         } catch(MailException | MessagingException e) {
             log.error("Error sending notification for task '{}' to email '{}': {}", TaskTitle, to, e.getMessage(), e);

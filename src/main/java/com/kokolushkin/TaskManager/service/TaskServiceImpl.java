@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.kokolushkin.TaskManager.dao.TaskRepository;
 import com.kokolushkin.TaskManager.entity.Task;
+import com.kokolushkin.TaskManager.entity.Task.Status;
 import com.kokolushkin.TaskManager.entity.User;
 import com.kokolushkin.TaskManager.exception.TaskNotFoundException;
 import com.kokolushkin.TaskManager.exception.UserNotFoundException;
@@ -30,7 +31,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getUserTasks(String email, Task.Priority priority, String keyword, LocalDateTime startDate, LocalDateTime endDate, String sortField, String sortDirecString) {
+    public List<Task> getUserTasks(String email, Task.Priority priority, String keyword, LocalDateTime startDate, LocalDateTime endDate, Task.Status status, String sortField, String sortDirecString) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirecString), sortField);
         Specification<Task> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -52,6 +53,10 @@ public class TaskServiceImpl implements TaskService {
 
             if (Objects.nonNull(endDate)) {
                 predicates.add(cb.lessThanOrEqualTo(root.get("dateTime"), endDate));
+            }
+
+            if (Objects.nonNull(status)) {
+                predicates.add(cb.equal(root.get("status"), status));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
@@ -107,5 +112,15 @@ public class TaskServiceImpl implements TaskService {
         }
 
         taskRepository.delete(task);
+    }
+
+    @Override
+    public Task updateTaskStatus(int id, String email, Status newStatus) {
+        Task task = taskRepository.findById(id)
+                                  .filter(t -> t.getUser().getEmail().equals(email))
+                                  .orElseThrow(() -> new TaskNotFoundException("Task not found or unavailable."));
+
+        task.setStatus(newStatus);
+        return taskRepository.save(task);
     }
 }

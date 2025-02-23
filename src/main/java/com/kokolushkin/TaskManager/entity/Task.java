@@ -28,6 +28,10 @@ public class Task {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
+
     public int getId() {
         return id;
     }
@@ -76,7 +80,19 @@ public class Task {
         this.user = user;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     public enum Priority {
         LOW, MEDIUM, HIGH
+    }
+
+    public enum Status {
+        PLANNED, COMPLETED;
     }
 }

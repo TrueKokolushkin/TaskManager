@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.kokolushkin.TaskManager.entity.Task;
 import com.kokolushkin.TaskManager.entity.Task.Priority;
+import com.kokolushkin.TaskManager.entity.Task.Status;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +17,7 @@ public class TaskDTO {
     private String description;
     private Priority priority;
     private LocalDateTime dateTime;
+    private Status status;
 
     public TaskDTO(Task task) {
         this.id = task.getId();
@@ -23,5 +25,6 @@ public class TaskDTO {
         this.description = task.getDescription();
         this.priority = task.getPriority();
         this.dateTime = task.getDateTime();
+        this.status = task.getStatus();
     }
 }
